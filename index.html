@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meu Portal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header>
+    <h1>📰 Meu Portal</h1>
+
+    <nav>
+      <a href="index.html">Início</a>
+      <a href="#" data-categoria="Forsaken">Forsaken</a>
+      <a href="#" data-categoria="Roblox">Roblox</a>
+      <a href="#" data-categoria="Outros">Outros jogos</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="destaque">
+      <span>🔥 DESTAQUE</span>
+      <h2 id="destaqueTitulo">Carregando...</h2>
+      <p id="destaqueResumo"></p>
+
+      <button id="btnLerDestaque" disabled>
+        Ler notícia
+      </button>
+    </section>
+
+    <section>
+      <h2>Últimas notícias</h2>
+
+      <!-- JS vai preencher aqui -->
+      <div id="listaNoticias"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 Meu Portal</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
