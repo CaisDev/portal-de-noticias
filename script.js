@@ -1,5 +1,18 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbxSplq_s5tCcyfsUv0VMYoHnfl7zgdIvNn2CAZ4FjhLOMuUEIBcbXos-e1SLOQgk6klEg/exec?path=news";
 
+// Corta o resumo no primeiro Enter e adiciona "..."
+function formatarResumo(texto) {
+  if (!texto) return "";
+  
+  const linhas = texto.split(/\r?\n/).filter(linha => linha.trim() !== "");
+  
+  if (linhas.length <= 1) {
+    return texto;
+  }
+  
+  return `${linhas[0]}\n\n...`;
+}
+
 function formatarData(isoDate) {
   if (!isoDate) return "";
   const d = new Date(isoDate);
@@ -7,7 +20,6 @@ function formatarData(isoDate) {
 }
 
 async function carregarNoticias() {
-  // redirect: "follow" garante que o redirecionamento do Apps Script seja seguido
   const res = await fetch(API_URL, {
     method: "GET",
     redirect: "follow"
@@ -18,11 +30,8 @@ async function carregarNoticias() {
   }
 
   const data = await res.json();
-
-  // Suporta estruturas como data.news, data.noticias ou arrays diretos
   const listaOriginal = data.news || data.noticias || (Array.isArray(data) ? data : []);
 
-  // Normaliza os dados lidando com variações comuns
   return listaOriginal.map((n) => {
     const valorDestaque = n.destaque !== undefined ? n.destaque : n.Destaque;
     const ehDestaque = valorDestaque === true || String(valorDestaque).toLowerCase() === "true";
@@ -56,7 +65,7 @@ function renderizarDestaque(noticias) {
   const destaque = noticias.find(n => n.destaque) || noticias[0];
 
   tituloEl.textContent = destaque.titulo;
-  resumoEl.textContent = destaque.resumo;
+  resumoEl.textContent = formatarResumo(destaque.resumo);
 
   btn.disabled = false;
   btn.onclick = () => {
@@ -72,11 +81,13 @@ function criarCardNoticia(noticia) {
     ? `<img src="${noticia.imagem}" alt="${noticia.titulo}">`
     : "";
 
+  const resumoFormatado = formatarResumo(noticia.resumo);
+
   artigo.innerHTML = `
     ${imgHtml}
     <h3>${noticia.titulo}</h3>
     <p>${noticia.categoria}</p>
-    <p>${noticia.resumo}</p>
+    <p class="card-resumo">${resumoFormatado}</p>
     <small>Por ${noticia.autor} • ${noticia.data}</small>
     <a class="btn-ler" href="noticia.html?id=${encodeURIComponent(noticia.id)}">Ler notícia</a>
   `;
@@ -93,7 +104,6 @@ function renderizarLista(noticias) {
     return;
   }
 
-  // Lista = notícias sem destaque
   const semDestaque = noticias.filter(n => !n.destaque);
 
   semDestaque.forEach(noticia => {
